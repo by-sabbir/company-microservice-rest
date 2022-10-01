@@ -2,7 +2,8 @@ CREATE TABLE company (
 	id uuid NOT NULL,
 	name varchar(15) NOT NULL UNIQUE,
 	description varchar(3000),
-	total_employee int NOT NULL,
+	description int NOT NULL,
+    total_employees int NOT NULL,
 	is_registered BOOLEAN NOT NULL,
 	type varchar(255) NOT NULL,
 	CONSTRAINT "company_pk" PRIMARY KEY ("id")

@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/by-sabbir/company-microservice-rest/pkg/db"
+	"github.com/by-sabbir/company-microservice-rest/internal/company"
+	"github.com/by-sabbir/company-microservice-rest/internal/db"
 )
 
 func Run() error {
@@ -19,7 +20,7 @@ func Run() error {
 		return fmt.Errorf("migrations failed because of: %w", err)
 	}
 
-	// cmpService := company.NewService(db)
+	_ = company.NewService(db)
 	return nil
 }
 
