@@ -1,3 +1,5 @@
+//go:generate mockgen -destination=company_mockgen_test.go -package=company github.com/by-sabbir/company-microservice-rest/internal/company Store
+
 package company
 
 import (
@@ -19,7 +21,7 @@ type Company struct {
 	ID             string
 	Name           string
 	Description    string
-	TotalEmployees string
+	TotalEmployees int
 	IsRegistered   bool
 	Type           string
 }
@@ -44,7 +46,8 @@ type Store interface {
 	PartialUpdateCompany(context.Context, string, Company) (Company, error)
 }
 
-func (c *Company) ScanType(t string) error {
+// ScanType - is the replacement for enum in database
+func (c *Company) ScanType() error {
 	for _, v := range CompanyType {
 		if c.Type == v {
 			return nil
@@ -56,21 +59,21 @@ func (c *Company) ScanType(t string) error {
 func (s *Service) GetCompany(ctx context.Context, id string) (Company, error) {
 	log.Println("Retreiving the Company")
 
-	cmt, err := s.Store.GetCompany(ctx, id)
+	cmp, err := s.Store.GetCompany(ctx, id)
 	if err != nil {
 		return Company{}, err
 	}
-	return cmt, nil
+	return cmp, nil
 }
 
-func (s *Service) PostCompany(ctx context.Context, cmt Company) (Company, error) {
+func (s *Service) PostCompany(ctx context.Context, cmp Company) (Company, error) {
 	log.Println("Creating Company")
 
-	cmt, err := s.Store.PostCompany(ctx, cmt)
+	cmp, err := s.Store.PostCompany(ctx, cmp)
 	if err != nil {
 		return Company{}, err
 	}
-	return cmt, nil
+	return cmp, nil
 }
 
 func (s *Service) DeleteCompany(ctx context.Context, id string) error {
@@ -84,12 +87,12 @@ func (s *Service) DeleteCompany(ctx context.Context, id string) error {
 }
 
 func (s *Service) PartialUpdateCompany(
-	ctx context.Context, id string, cmt Company,
+	ctx context.Context, id string, cmp Company,
 ) (Company, error) {
 	log.Println("Updating Company...")
-	cmt, err := s.Store.PartialUpdateCompany(ctx, id, cmt)
+	cmp, err := s.Store.PartialUpdateCompany(ctx, id, cmp)
 	if err != nil {
 		return Company{}, err
 	}
-	return cmt, nil
+	return cmp, nil
 }
