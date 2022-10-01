@@ -57,21 +57,23 @@ func (d *DataBase) PostCompany(ctx context.Context, cmp company.Company) (compan
 		IsRegistered:   cmp.IsRegistered,
 		Type:           cmp.Type,
 	}
-	row, err := d.Client.NamedQueryContext(
+	qs := `insert into company
+	(id, name, description, total_employees, is_registered, type)
+	values
+	($1, $2, $3, $4, $5, $6);`
+	row, err := d.Client.QueryContext(
 		ctx,
-		`insert into company
-		(id, name, description, total_employees, is_registered, type)
-		values
-		(:id, :name, :description, :is_registered, :type)`,
-		postRow,
+		qs,
+		postRow.ID, postRow.Name, postRow.Description,
+		postRow.TotalEmployees, postRow.IsRegistered, postRow.Type,
 	)
+
 	if err != nil {
 		return company.Company{}, fmt.Errorf("error posting Company: %+v", err)
 	}
 	if err := row.Close(); err != nil {
 		return company.Company{}, fmt.Errorf("could not close the row, %+v", err)
 	}
-	defer row.Close()
 
 	return convertCompany(postRow), nil
 }
@@ -94,19 +96,22 @@ func (d *DataBase) PartialUpdateCompany(
 	ctx context.Context, id string, cmp company.Company,
 ) (company.Company, error) {
 	cmpRow := CompanyRow{
-		ID:             cmp.ID,
+		ID:             id,
 		Name:           cmp.Name,
 		Description:    sql.NullString{String: cmp.Description, Valid: true},
 		TotalEmployees: cmp.TotalEmployees,
 		IsRegistered:   cmp.IsRegistered,
 		Type:           cmp.Type,
 	}
-	row, err := d.Client.NamedQueryContext(
+
+	row, err := d.Client.QueryContext(
 		ctx,
 		`update company set
-		body=:body, slug=:slug, author=:author
-		where id=:id`,
-		cmpRow,
+		name=$1, description=$2, total_employees=$3,
+		is_registered=$4, type=$5
+		where id=$6`,
+		cmpRow.Name, cmpRow.Description, cmpRow.TotalEmployees,
+		cmpRow.IsRegistered, cmpRow.Type, cmpRow.ID,
 	)
 	if err != nil {
 		return company.Company{}, fmt.Errorf("error updating Company: %w", err)
@@ -114,7 +119,6 @@ func (d *DataBase) PartialUpdateCompany(
 	if err := row.Close(); err != nil {
 		return company.Company{}, fmt.Errorf("error updating row: %w", err)
 	}
-	defer row.Close()
 
 	return convertCompany(cmpRow), nil
 }

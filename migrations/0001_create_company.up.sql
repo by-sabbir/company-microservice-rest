@@ -2,7 +2,6 @@ CREATE TABLE company (
 	id uuid NOT NULL,
 	name varchar(15) NOT NULL UNIQUE,
 	description varchar(3000),
-	description int NOT NULL,
     total_employees int NOT NULL,
 	is_registered BOOLEAN NOT NULL,
 	type varchar(255) NOT NULL,
