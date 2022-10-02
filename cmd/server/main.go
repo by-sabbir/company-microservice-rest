@@ -28,6 +28,7 @@ func Run() error {
 	httpHandler := transportHttp.NewHandler(svc)
 	log.Println("service started at: ", httpHandler.Server.Addr)
 	if err := httpHandler.Serve(); err != nil {
+		log.Println("service stopped: ", err)
 		os.Exit(1)
 	}
 	return nil
