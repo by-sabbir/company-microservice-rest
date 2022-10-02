@@ -19,7 +19,7 @@ type CompanyRow struct {
 	Type           string
 }
 
-func convertCompany(c CompanyRow) company.Company {
+func convertCompany(c *CompanyRow) company.Company {
 	return company.Company{
 		ID:             c.ID,
 		Name:           c.Name,
@@ -44,11 +44,16 @@ func (d *DataBase) GetCompany(ctx context.Context, uuid string) (company.Company
 	if err != nil {
 		return company.Company{}, fmt.Errorf("error fetching company from uuid: %+v", err)
 	}
-	return convertCompany(cmpRow), nil
+	return convertCompany(&cmpRow), nil
 }
 
 func (d *DataBase) PostCompany(ctx context.Context, cmp company.Company) (company.Company, error) {
 	cmp.ID = uuid.NewString()
+
+	if err := cmp.ScanType(); err != nil {
+		return company.Company{}, err
+	}
+
 	postRow := CompanyRow{
 		ID:             cmp.ID,
 		Name:           cmp.Name,
@@ -57,9 +62,11 @@ func (d *DataBase) PostCompany(ctx context.Context, cmp company.Company) (compan
 		IsRegistered:   cmp.IsRegistered,
 		Type:           cmp.Type,
 	}
+
 	if err := postRow.checkNull(); err != nil {
 		return company.Company{}, err
 	}
+
 	qs := `insert into company
 	(id, name, description, total_employees, is_registered, type)
 	values
@@ -78,7 +85,7 @@ func (d *DataBase) PostCompany(ctx context.Context, cmp company.Company) (compan
 		return company.Company{}, fmt.Errorf("could not close the row, %+v", err)
 	}
 
-	return convertCompany(postRow), nil
+	return convertCompany(&postRow), nil
 }
 
 func (d *DataBase) DeleteCompany(ctx context.Context, uuid string) error {
@@ -98,15 +105,42 @@ func (d *DataBase) DeleteCompany(ctx context.Context, uuid string) error {
 func (d *DataBase) PartialUpdateCompany(
 	ctx context.Context, id string, cmp company.Company,
 ) (company.Company, error) {
-	cmpRow := CompanyRow{
-		ID:             id,
-		Name:           cmp.Name,
-		Description:    sql.NullString{String: cmp.Description, Valid: true},
-		TotalEmployees: cmp.TotalEmployees,
-		IsRegistered:   cmp.IsRegistered,
-		Type:           cmp.Type,
+
+	currentRow, err := d.GetCompany(ctx, id)
+	if err != nil {
+		return company.Company{}, err
 	}
 
+	// as description can be null we update directly into the struct
+	cmpRow := &CompanyRow{
+		ID:             id,
+		Description:    sql.NullString{String: cmp.Description, Valid: true},
+		Name:           currentRow.Name,
+		TotalEmployees: currentRow.TotalEmployees,
+		IsRegistered:   currentRow.IsRegistered,
+		Type:           currentRow.Type,
+	}
+
+	// null check
+	if (cmp.Name != currentRow.Name) && (cmp.Name != "") {
+		cmpRow.Name = cmp.Name
+	}
+	if (cmp.Type != currentRow.Type) && (cmp.Type != "") {
+		if err := cmp.ScanType(); err != nil {
+			return company.Company{}, err
+		}
+		cmpRow.Type = cmp.Type
+	}
+	if (cmp.TotalEmployees != currentRow.TotalEmployees) && (cmp.TotalEmployees > 0) {
+		cmpRow.TotalEmployees = cmp.TotalEmployees
+	}
+	if cmp.IsRegistered != currentRow.IsRegistered {
+		cmpRow.IsRegistered = cmp.IsRegistered
+	}
+
+	if err := cmpRow.checkNull(); err != nil {
+		return company.Company{}, err
+	}
 	row, err := d.Client.QueryContext(
 		ctx,
 		`update company set
@@ -122,7 +156,6 @@ func (d *DataBase) PartialUpdateCompany(
 	if err := row.Close(); err != nil {
 		return company.Company{}, fmt.Errorf("error updating row: %w", err)
 	}
-
 	return convertCompany(cmpRow), nil
 }
 
@@ -130,8 +163,8 @@ func (c *CompanyRow) checkNull() error {
 	if c.ID == "" {
 		return errors.New("id cannot be null")
 	}
-	if c.TotalEmployees == 0 {
-		return errors.New("total_employees cannot be nil")
+	if c.TotalEmployees <= 0 {
+		return errors.New("total_employees must be greater than 0")
 	}
 	if c.Type == "" {
 		return errors.New("type cannot be nil")

@@ -81,3 +81,35 @@ func (h *Handler) DeleteCompany(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusNoContent)
 }
+
+func (h *Handler) PartialUpdateCompany(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	var cmp company.Company
+
+	if err := json.NewDecoder(r.Body).Decode(&cmp); err != nil {
+		log.Println("error posting company: ", err)
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	updatedCmp, err := h.Service.PartialUpdateCompany(r.Context(), id, cmp)
+	if err != nil {
+		log.Println("error posting company: ", err)
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	w.WriteHeader(http.StatusPartialContent)
+	if err := json.NewEncoder(w).Encode(updatedCmp); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Println("error encoding message: ", err)
+	}
+}

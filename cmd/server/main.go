@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/by-sabbir/company-microservice-rest/internal/company"
 	"github.com/by-sabbir/company-microservice-rest/internal/db"
@@ -27,7 +28,7 @@ func Run() error {
 	httpHandler := transportHttp.NewHandler(svc)
 	log.Println("service started at: ", httpHandler.Server.Addr)
 	if err := httpHandler.Serve(); err != nil {
-		return err
+		os.Exit(1)
 	}
 	return nil
 }

@@ -43,7 +43,7 @@ func (h *Handler) mapRoutes() {
 
 	private.HandleFunc("/create", h.PostCompany).Methods("POST")
 	private.HandleFunc("/delete/{id}", h.DeleteCompany).Methods("DELETE")
-	private.HandleFunc("/patch/{id}", h.DeleteCompany).Methods("PATCH")
+	private.HandleFunc("/patch/{id}", h.PartialUpdateCompany).Methods("PATCH")
 
 }
 

@@ -62,7 +62,7 @@ func TestCompanyDB(t *testing.T) {
 	t.Run("test get company", func(t *testing.T) {
 		gotCmt, err := db.GetCompany(context.Background(), id)
 		assert.NoError(t, err)
-		assert.Equal(t, 120, gotCmt.TotalEmployees)
+		assert.Equal(t, initCmp.TotalEmployees, gotCmt.TotalEmployees)
 	})
 
 	t.Run("test get company with wrong id", func(t *testing.T) {
