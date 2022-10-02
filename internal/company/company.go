@@ -18,12 +18,12 @@ var CompanyType = []string{
 
 // Company - representation of a company structure
 type Company struct {
-	ID             string
-	Name           string
-	Description    string
-	TotalEmployees int
-	IsRegistered   bool
-	Type           string
+	ID             string `json:"id,omitempty"`
+	Name           string `json:"name,omitempty"`
+	Description    string `json:"description,omitempty"`
+	TotalEmployees int    `json:"total_employees,omitempty"`
+	IsRegistered   bool   `json:"is_registered,omitempty"`
+	Type           string `json:"type,omitempty"`
 }
 
 // Service - is the struct containing business logics
@@ -57,8 +57,6 @@ func (c *Company) ScanType() error {
 }
 
 func (s *Service) GetCompany(ctx context.Context, id string) (Company, error) {
-	log.Println("Retreiving the Company")
-
 	cmp, err := s.Store.GetCompany(ctx, id)
 	if err != nil {
 		return Company{}, err
@@ -67,8 +65,6 @@ func (s *Service) GetCompany(ctx context.Context, id string) (Company, error) {
 }
 
 func (s *Service) PostCompany(ctx context.Context, cmp Company) (Company, error) {
-	log.Println("Creating Company")
-
 	cmp, err := s.Store.PostCompany(ctx, cmp)
 	if err != nil {
 		return Company{}, err

@@ -6,6 +6,8 @@ import (
 
 	"github.com/by-sabbir/company-microservice-rest/internal/company"
 	"github.com/by-sabbir/company-microservice-rest/internal/db"
+
+	transportHttp "github.com/by-sabbir/company-microservice-rest/internal/transport/http"
 )
 
 func Run() error {
@@ -20,7 +22,13 @@ func Run() error {
 		return fmt.Errorf("migrations failed because of: %w", err)
 	}
 
-	_ = company.NewService(db)
+	svc := company.NewService(db)
+
+	httpHandler := transportHttp.NewHandler(svc)
+	log.Println("service started at: ", httpHandler.Server.Addr)
+	if err := httpHandler.Serve(); err != nil {
+		return err
+	}
 	return nil
 }
 
