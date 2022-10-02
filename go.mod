@@ -3,6 +3,7 @@ module github.com/by-sabbir/company-microservice-rest
 go 1.19
 
 require (
+	github.com/golang-jwt/jwt/v4 v4.1.0
 	github.com/golang-migrate/migrate/v4 v4.15.2
 	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.3.0
