@@ -222,6 +222,34 @@ func TestPayload(t *testing.T) {
 
 }
 
+func TestCompanyPrivateAPIWithoutToken(t *testing.T) {
+	t.Setenv("DB_HOST", "127.0.0.1")
+	t.Setenv("DB_PORT", "5433")
+	t.Setenv("DB_USERNAME", "xmtest")
+	t.Setenv("DB_PASSWORD", "hello")
+	t.Setenv("DB_NAME", "postgres")
+	t.Setenv("SSL_MODE", "disable")
+	rand.Seed(time.Now().UnixNano())
+
+	createRequest := &company.Company{
+		Name:           RandStringBytes(10),
+		Description:    "Lorem Ipsum Dolor Sit",
+		TotalEmployees: 19,
+		IsRegistered:   true,
+		Type:           company.CompanyType[2],
+	}
+	t.Run("test create company api", func(t *testing.T) {
+		uri := "/api/v1/private/company/create"
+		payload, err := json.Marshal(createRequest)
+		assert.NoError(t, err)
+		req := httptest.NewRequest("POST", uri, bytes.NewBuffer(payload))
+
+		resp := execReq(req)
+		assert.Equal(t, http.StatusUnauthorized, resp.Result().StatusCode)
+
+	})
+}
+
 func execReq(req *http.Request) *httptest.ResponseRecorder {
 	db, err := db.NewDatabase()
 	if err != nil {
