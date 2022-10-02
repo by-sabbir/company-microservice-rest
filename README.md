@@ -37,7 +37,7 @@ coverage: **73.6%** of statements
 make up
 ```
 
-## Acceptance Test With Postman
+## Acceptance Test and Endpoints With Postman
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/19090428-3df486e3-9422-41ce-a9e5-3980f637b078?action=collection%2Ffork&collection-url=entityId%3D19090428-3df486e3-9422-41ce-a9e5-3980f637b078%26entityType%3Dcollection%26workspaceId%3D755b284e-1801-4e9a-a4d8-36fb74cc2021#?env%5BXM-Assessment%5D=W3sia2V5IjoiYmFzZVVybCIsInZhbHVlIjoiaHR0cDovL2xvY2FsaG9zdDo4ODg4IiwiZW5hYmxlZCI6dHJ1ZSwidHlwZSI6ImRlZmF1bHQifSx7ImtleSI6InRva2VuIiwidmFsdWUiOiJleUpoYkdjaU9pSklVekkxTmlJc0luUjVjQ0k2SWtwWFZDSjkuZXlKbGJXRnBiQ0k2SW1aeWIyMXpZV0ppYVhKQVoyMWhhV3d1WTI5dEluMC44QVVfU1VHM3BUcWYwSGdYallwZHRsSndHNjlrd0NPV3VWSWJWdlZBRDhFIiwiZW5hYmxlZCI6dHJ1ZSwidHlwZSI6ImRlZmF1bHQifSx7ImtleSI6ImlkIiwidmFsdWUiOiIiLCJlbmFibGVkIjp0cnVlLCJ0eXBlIjoiZGVmYXVsdCJ9XQ==)
 
@@ -52,5 +52,18 @@ and
 ```bash
 make cleanup
 ```
+### Load Test Result
 
+![Load Test](./img/load_test.png "Load Test with Ddosify")
 
+The service can serve **2.5K+ write request/sec** with authentication.
+
+### Features
+
+- Production-grade multi-stage build container only 15MB size.
+- JWT Authentication (jwt.io, secret = xm-go-dev)
+- Well tested with unittests
+- Integration tests embedded
+- Graceful shutdown
+- Gitworkflow and Codecoverage enabled
+- [Event Driven](https://github.com/by-sabbir/company-microservice-rest/tree/ed) with kafka on [`ed`](https://github.com/by-sabbir/company-microservice-rest/tree/ed) branch.
