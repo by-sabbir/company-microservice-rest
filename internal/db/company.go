@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"log"
 
 	"github.com/by-sabbir/company-microservice-rest/internal/company"
 	"github.com/google/uuid"
@@ -83,13 +82,13 @@ func (d *DataBase) PostCompany(ctx context.Context, cmp company.Company) (compan
 }
 
 func (d *DataBase) DeleteCompany(ctx context.Context, uuid string) error {
-	row, err := d.Client.ExecContext(
+	_, err := d.Client.ExecContext(
 		ctx,
 		`delete from company
 		where id::text=$1`,
 		uuid,
 	)
-	log.Println("deleted: ", row)
+
 	if err != nil {
 		return err
 	}

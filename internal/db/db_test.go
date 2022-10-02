@@ -106,4 +106,9 @@ func TestCompanyDB(t *testing.T) {
 		_, err := db.PostCompany(context.Background(), initCmp)
 		assert.Error(t, err)
 	})
+
+	t.Run("test delete entry", func(t *testing.T) {
+		err := db.DeleteCompany(context.Background(), id)
+		assert.NoError(t, err)
+	})
 }
