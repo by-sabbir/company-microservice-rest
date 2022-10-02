@@ -2,6 +2,7 @@ package http
 
 import (
 	"context"
+	"encoding/json"
 	"log"
 	"net/http"
 	"os"
@@ -39,6 +40,7 @@ func (h *Handler) mapRoutes() {
 	private := h.Router.PathPrefix("/api/v1/private/company").Subrouter()
 	public := h.Router.PathPrefix("/api/v1/public/company").Subrouter()
 
+	h.Router.HandleFunc("/healthcheck", healthCheck)
 	public.HandleFunc("/{id}", h.GetCompany).Methods("GET")
 
 	private.HandleFunc("/create", JWTAuth(h.PostCompany)).Methods("POST")
@@ -47,7 +49,6 @@ func (h *Handler) mapRoutes() {
 
 }
 
-// go test - skip
 func (h *Handler) Serve() error {
 	go func() {
 		if err := h.Server.ListenAndServe(); err != nil {
@@ -65,4 +66,10 @@ func (h *Handler) Serve() error {
 
 	log.Println("Shut down gracefully...")
 	return nil
+}
+
+func healthCheck(w http.ResponseWriter, r *http.Request) {
+	json.NewEncoder(w).Encode(map[string]string{
+		"status": "ok!",
+	})
 }

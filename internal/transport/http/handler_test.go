@@ -46,6 +46,13 @@ func TestCompanyAPIPositive(t *testing.T) {
 		IsRegistered:   true,
 		Type:           company.CompanyType[3],
 	}
+
+	t.Run("test healthcheck", func(t *testing.T) {
+		uri := "/healthcheck"
+		req := httptest.NewRequest("GET", uri, nil)
+		resp := execReq(req)
+		assert.Equal(t, http.StatusOK, resp.Result().StatusCode)
+	})
 	t.Run("test create company api", func(t *testing.T) {
 		uri := "/api/v1/private/company/create"
 		payload, err := json.Marshal(createRequest)

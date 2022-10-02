@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -33,7 +34,8 @@ func JWTAuth(original func(w http.ResponseWriter, r *http.Request),
 }
 
 func validateToken(tokenString string) bool {
-	secret := []byte("xm-go-dev")
+	jwt_secret := os.Getenv("JWT_SECRET")
+	secret := []byte(jwt_secret)
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return false, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
