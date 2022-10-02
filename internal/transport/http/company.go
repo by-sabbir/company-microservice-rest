@@ -3,11 +3,14 @@ package http
 import (
 	"context"
 	"encoding/json"
+	"io"
 	"log"
 	"net/http"
 
 	"github.com/by-sabbir/company-microservice-rest/internal/company"
 	"github.com/gorilla/mux"
+
+	ev "github.com/by-sabbir/company-microservice-rest/internal/event/producer"
 )
 
 type CompanyRestService interface {
@@ -44,6 +47,11 @@ func (h *Handler) PostCompany(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		log.Println("error encoding message: ", err)
 	}
+	b, err := io.ReadAll(r.Body)
+	if err != nil {
+		log.Println("could not read request body: ", err)
+	}
+	ev.EventProducer(b, "create_company", postedCmp.ID)
 }
 
 func (h *Handler) GetCompany(w http.ResponseWriter, r *http.Request) {
