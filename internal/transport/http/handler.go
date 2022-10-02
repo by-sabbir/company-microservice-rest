@@ -47,10 +47,11 @@ func (h *Handler) mapRoutes() {
 
 }
 
+// go test - skip
 func (h *Handler) Serve() error {
 	go func() {
 		if err := h.Server.ListenAndServe(); err != nil {
-			log.Println(err.Error())
+			log.Fatalf("error serving http%+v\n", err)
 		}
 	}()
 

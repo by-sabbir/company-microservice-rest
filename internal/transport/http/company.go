@@ -52,7 +52,7 @@ func (h *Handler) GetCompany(w http.ResponseWriter, r *http.Request) {
 
 	cmp, err := h.Service.GetCompany(r.Context(), id)
 	if err != nil {
-		log.Println("error getting company from db: ", err)
+		w.WriteHeader(http.StatusNotFound)
 		json.NewEncoder(w).Encode(map[string]string{
 			"error": err.Error(),
 		})
@@ -62,7 +62,6 @@ func (h *Handler) GetCompany(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(cmp); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		log.Println("error encoding json: ", err)
 	}
 }
 
@@ -72,7 +71,6 @@ func (h *Handler) DeleteCompany(w http.ResponseWriter, r *http.Request) {
 
 	err := h.Service.DeleteCompany(r.Context(), id)
 	if err != nil {
-		log.Println("error deleting company from db: ", err)
 		json.NewEncoder(w).Encode(map[string]string{
 			"error": err.Error(),
 		})
@@ -89,7 +87,6 @@ func (h *Handler) PartialUpdateCompany(w http.ResponseWriter, r *http.Request) {
 	var cmp company.Company
 
 	if err := json.NewDecoder(r.Body).Decode(&cmp); err != nil {
-		log.Println("error posting company: ", err)
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{
 			"error": err.Error(),
@@ -99,7 +96,6 @@ func (h *Handler) PartialUpdateCompany(w http.ResponseWriter, r *http.Request) {
 
 	updatedCmp, err := h.Service.PartialUpdateCompany(r.Context(), id, cmp)
 	if err != nil {
-		log.Println("error posting company: ", err)
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{
 			"error": err.Error(),
@@ -110,6 +106,5 @@ func (h *Handler) PartialUpdateCompany(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusPartialContent)
 	if err := json.NewEncoder(w).Encode(updatedCmp); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		log.Println("error encoding message: ", err)
 	}
 }
