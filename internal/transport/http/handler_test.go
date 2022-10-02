@@ -36,6 +36,7 @@ func TestCompanyAPIPositive(t *testing.T) {
 	t.Setenv("DB_PASSWORD", "hello")
 	t.Setenv("DB_NAME", "postgres")
 	t.Setenv("SSL_MODE", "disable")
+	t.Setenv("JWT_SECRET", "xm-go-dev")
 	rand.Seed(time.Now().UnixNano())
 
 	var id string
@@ -119,6 +120,7 @@ func TestCompanyAPINegative(t *testing.T) {
 	t.Setenv("DB_PASSWORD", "hello")
 	t.Setenv("DB_NAME", "postgres")
 	t.Setenv("SSL_MODE", "disable")
+	t.Setenv("JWT_SECRET", "xm-go-dev")
 	rand.Seed(time.Now().UnixNano())
 	uri := "/api/v1/private/company/create"
 
@@ -191,13 +193,14 @@ func TestCompanyAPINegative(t *testing.T) {
 	})
 }
 
-func TestPayload(t *testing.T) {
+func TestCompanyAPIPayload(t *testing.T) {
 	t.Setenv("DB_HOST", "127.0.0.1")
 	t.Setenv("DB_PORT", "5433")
 	t.Setenv("DB_USERNAME", "xmtest")
 	t.Setenv("DB_PASSWORD", "hello")
 	t.Setenv("DB_NAME", "postgres")
 	t.Setenv("SSL_MODE", "disable")
+	t.Setenv("JWT_SECRET", "xm-go-dev")
 
 	t.Run("test post payload", func(t *testing.T) {
 		uri := "/api/v1/private/company/create"
@@ -229,13 +232,14 @@ func TestPayload(t *testing.T) {
 
 }
 
-func TestCompanyPrivateAPIWithoutToken(t *testing.T) {
+func TestCompanyAPIWithoutToken(t *testing.T) {
 	t.Setenv("DB_HOST", "127.0.0.1")
 	t.Setenv("DB_PORT", "5433")
 	t.Setenv("DB_USERNAME", "xmtest")
 	t.Setenv("DB_PASSWORD", "hello")
 	t.Setenv("DB_NAME", "postgres")
 	t.Setenv("SSL_MODE", "disable")
+	t.Setenv("JWT_SECRET", "xm-go-dev")
 	rand.Seed(time.Now().UnixNano())
 
 	createRequest := &company.Company{
