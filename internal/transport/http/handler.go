@@ -41,9 +41,9 @@ func (h *Handler) mapRoutes() {
 
 	public.HandleFunc("/{id}", h.GetCompany).Methods("GET")
 
-	private.HandleFunc("/create", h.PostCompany).Methods("POST")
-	private.HandleFunc("/delete/{id}", h.DeleteCompany).Methods("DELETE")
-	private.HandleFunc("/patch/{id}", h.PartialUpdateCompany).Methods("PATCH")
+	private.HandleFunc("/create", JWTAuth(h.PostCompany)).Methods("POST")
+	private.HandleFunc("/delete/{id}", JWTAuth(h.DeleteCompany)).Methods("DELETE")
+	private.HandleFunc("/patch/{id}", JWTAuth(h.PartialUpdateCompany)).Methods("PATCH")
 
 }
 
