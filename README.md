@@ -1,1 +1,3 @@
 # Company Microservice
+
+![Company Service Status](https://github.com/by-sabbir/company-microservice-rest/actions/workflows/company.yml/badge.svg) [![codecov](https://codecov.io/github/by-sabbir/company-microservice-rest/branch/master/graph/badge.svg?token=E72YKQGTD0)](https://codecov.io/github/by-sabbir/company-microservice-rest) [![Go Report](https://goreportcard.com/badge/github.com/by-sabbir/company-microservice-rest)](https://goreportcard.com/report/github.com/by-sabbir/company-microservice-rest) 
