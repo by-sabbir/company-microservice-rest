@@ -169,7 +169,10 @@ func (c *CompanyRow) checkNull() error {
 		return errors.New("total_employees must be greater than 0")
 	}
 	if c.Type == "" {
-		return errors.New("type cannot be nil")
+		return errors.New("type cannot be null or empty string")
+	}
+	if c.Name == "" {
+		return errors.New("name cannot be null or empty string")
 	}
 
 	return nil
