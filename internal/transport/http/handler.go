@@ -36,13 +36,14 @@ func NewHandler(service CompanyRestService) *Handler {
 }
 
 func (h *Handler) mapRoutes() {
-	private := h.Router.PathPrefix("/api/v1/private").Subrouter()
-	public := h.Router.PathPrefix("/api/v1/public").Subrouter()
+	private := h.Router.PathPrefix("/api/v1/private/company").Subrouter()
+	public := h.Router.PathPrefix("/api/v1/public/company").Subrouter()
 
-	public.HandleFunc("/company/{id}", h.GetCompany).Methods("GET")
+	public.HandleFunc("/{id}", h.GetCompany).Methods("GET")
 
-	private.HandleFunc("/create-company", h.PostCompany).Methods("POST")
-	private.HandleFunc("/delete-company/{id}", h.DeleteCompany).Methods("DELETE")
+	private.HandleFunc("/create", h.PostCompany).Methods("POST")
+	private.HandleFunc("/delete/{id}", h.DeleteCompany).Methods("DELETE")
+	private.HandleFunc("/patch/{id}", h.DeleteCompany).Methods("PATCH")
 
 }
 
