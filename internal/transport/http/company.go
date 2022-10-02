@@ -59,9 +59,25 @@ func (h *Handler) GetCompany(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(cmp); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		log.Println("error encoding json: ", err)
 	}
-	w.WriteHeader(http.StatusOK)
+}
+
+func (h *Handler) DeleteCompany(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	err := h.Service.DeleteCompany(r.Context(), id)
+	if err != nil {
+		log.Println("error deleting company from db: ", err)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }

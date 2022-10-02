@@ -39,9 +39,10 @@ func (h *Handler) mapRoutes() {
 	private := h.Router.PathPrefix("/api/v1/private").Subrouter()
 	public := h.Router.PathPrefix("/api/v1/public").Subrouter()
 
-	public.HandleFunc("/company/{id}", h.GetCompany)
+	public.HandleFunc("/company/{id}", h.GetCompany).Methods("GET")
 
-	private.HandleFunc("/create-company", h.PostCompany)
+	private.HandleFunc("/create-company", h.PostCompany).Methods("POST")
+	private.HandleFunc("/delete-company/{id}", h.DeleteCompany).Methods("DELETE")
 
 }
 
