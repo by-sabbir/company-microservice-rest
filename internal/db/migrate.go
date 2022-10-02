@@ -23,15 +23,12 @@ func (d *DataBase) MigrateDB() error {
 	)
 
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 
 	if err := m.Up(); err != nil {
 		if err.Error() == migrate.ErrNoChange.Error() {
-			log.Println("migration: no change")
 		} else {
-			log.Println("migration up failed: ", err)
 			return err
 		}
 	}

@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 
@@ -56,6 +57,9 @@ func (d *DataBase) PostCompany(ctx context.Context, cmp company.Company) (compan
 		TotalEmployees: cmp.TotalEmployees,
 		IsRegistered:   cmp.IsRegistered,
 		Type:           cmp.Type,
+	}
+	if err := postRow.checkNull(); err != nil {
+		return company.Company{}, err
 	}
 	qs := `insert into company
 	(id, name, description, total_employees, is_registered, type)
@@ -121,4 +125,18 @@ func (d *DataBase) PartialUpdateCompany(
 	}
 
 	return convertCompany(cmpRow), nil
+}
+
+func (c *CompanyRow) checkNull() error {
+	if c.ID == "" {
+		return errors.New("id cannot be null")
+	}
+	if c.TotalEmployees == 0 {
+		return errors.New("total_employees cannot be nil")
+	}
+	if c.Type == "" {
+		return errors.New("type cannot be nil")
+	}
+
+	return nil
 }

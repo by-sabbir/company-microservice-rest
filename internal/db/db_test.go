@@ -2,12 +2,12 @@ package db
 
 import (
 	"context"
-	"log"
 	"math/rand"
 	"testing"
 	"time"
 
 	"github.com/by-sabbir/company-microservice-rest/internal/company"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -23,7 +23,7 @@ func RandStringBytes(n int) string {
 
 func TestCompanyDB(t *testing.T) {
 	t.Setenv("DB_HOST", "127.0.0.1")
-	t.Setenv("DB_PORT", "5432")
+	t.Setenv("DB_PORT", "5433")
 	t.Setenv("DB_USERNAME", "xmtest")
 	t.Setenv("DB_PASSWORD", "hello")
 	t.Setenv("DB_NAME", "postgres")
@@ -33,6 +33,16 @@ func TestCompanyDB(t *testing.T) {
 	db, err := NewDatabase()
 	assert.NoError(t, err)
 
+	t.Run("test database migration", func(t *testing.T) {
+		err := db.MigrateDB()
+		assert.NoError(t, err)
+	})
+
+	t.Run("test no change at migration", func(t *testing.T) {
+		err := db.MigrateDB()
+		assert.NoError(t, err)
+	})
+
 	initCmp := company.Company{
 		Name:           RandStringBytes(6),
 		Description:    "Lorem Ipsum Dolor Sit",
@@ -40,6 +50,7 @@ func TestCompanyDB(t *testing.T) {
 		IsRegistered:   true,
 		Type:           company.CompanyType[1],
 	}
+
 	var id string
 	t.Run("test create company", func(t *testing.T) {
 		cmp, err := db.PostCompany(context.Background(), initCmp)
@@ -52,6 +63,11 @@ func TestCompanyDB(t *testing.T) {
 		gotCmt, err := db.GetCompany(context.Background(), id)
 		assert.NoError(t, err)
 		assert.Equal(t, 120, gotCmt.TotalEmployees)
+	})
+
+	t.Run("test get company with wrong id", func(t *testing.T) {
+		_, err := db.GetCompany(context.Background(), uuid.NewString())
+		assert.Error(t, err)
 	})
 
 	t.Run("test partial update", func(t *testing.T) {
@@ -75,10 +91,15 @@ func TestCompanyDB(t *testing.T) {
 			IsRegistered:   true,
 		}
 		_, err := db.PostCompany(context.Background(), newCmp)
-		log.Println("posted: ", newCmp)
 		assert.Error(t, err)
-		log.Println("error posting: ", err)
-
+		newCmp = company.Company{
+			Name:         RandStringBytes(6),
+			Description:  "Lorem Ipsum Dolor Sit",
+			Type:         company.CompanyType[1],
+			IsRegistered: true,
+		}
+		_, err = db.PostCompany(context.Background(), newCmp)
+		assert.Error(t, err)
 	})
 
 	t.Run("test duplicate entry fails", func(t *testing.T) {
