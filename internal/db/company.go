@@ -111,10 +111,9 @@ func (d *DataBase) PartialUpdateCompany(
 		return company.Company{}, err
 	}
 
-	// as description can be null we update directly into the struct
 	cmpRow := &CompanyRow{
 		ID:             id,
-		Description:    sql.NullString{String: cmp.Description, Valid: true},
+		Description:    sql.NullString{String: currentRow.Description, Valid: true},
 		Name:           currentRow.Name,
 		TotalEmployees: currentRow.TotalEmployees,
 		IsRegistered:   currentRow.IsRegistered,
@@ -125,7 +124,7 @@ func (d *DataBase) PartialUpdateCompany(
 	if (cmp.Name != currentRow.Name) && (cmp.Name != "") {
 		cmpRow.Name = cmp.Name
 	}
-	if (cmp.Type != currentRow.Type) && (cmp.Type != "") {
+	if (cmp.Type != currentRow.Type) && cmp.Type != "" {
 		if err := cmp.ScanType(); err != nil {
 			return company.Company{}, err
 		}
@@ -136,6 +135,9 @@ func (d *DataBase) PartialUpdateCompany(
 	}
 	if cmp.IsRegistered != currentRow.IsRegistered {
 		cmpRow.IsRegistered = cmp.IsRegistered
+	}
+	if (cmp.Description != currentRow.Description) && (cmp.Description != "") {
+		cmpRow.Description = sql.NullString{String: cmp.Description, Valid: true}
 	}
 
 	if err := cmpRow.checkNull(); err != nil {

@@ -18,12 +18,12 @@ var CompanyType = []string{
 
 // Company - representation of a company structure
 type Company struct {
-	ID             string `json:"id"`
-	Name           string `json:"name"`
-	Description    string `json:"description"`
-	TotalEmployees int    `json:"total_employees"`
-	IsRegistered   bool   `json:"is_registered"`
-	Type           string `json:"type"`
+	ID             string `json:"id,omitempty"`
+	Name           string `json:"name,omitempty"`
+	Description    string `json:"description,omitempty"`
+	TotalEmployees int    `json:"total_employees,omitempty"`
+	IsRegistered   bool   `json:"is_registered,omitempty"`
+	Type           string `json:"type,omitempty"`
 }
 
 // Service - is the struct containing business logics
