@@ -40,17 +40,15 @@ services:
     build: .
     container_name: "company-rest-api"
     environment:
-      DB_USERNAME: "postgres"
-      DB_PASSWORD: "hello"
-      DB_DB: "postgres"
-      DB_HOST: "db"
-      DB_TABLE: "postgres"
-      DB_PORT: 5432
-      SSL_MODE: "disable"
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USERNAME=xmtest
+      - DB_PASSWORD=hello
+      - DB_NAME=postgres
+      - SSL_MODE=disable
+      - JWT_SECRET=xm-go-dev
     ports:
-      - 8080:8080
-    volumes:
-      - ./migrations:/app/migrations
+      - 8888:8888
     depends_on:
       db:
         condition: service_healthy
