@@ -2,6 +2,7 @@ package http
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 
@@ -18,7 +19,6 @@ func JWTAuth(original func(w http.ResponseWriter, r *http.Request),
 		}
 
 		authHeaderParts := strings.Split(authHeader[0], " ")
-		fmt.Println("header parts: ", authHeaderParts[1])
 		if len(authHeaderParts) != 2 || strings.ToLower(authHeaderParts[0]) != "bearer" {
 			http.Error(w, "not authorized", http.StatusUnauthorized)
 			return
@@ -40,12 +40,13 @@ func validateToken(tokenString string) bool {
 		}
 		return secret, nil
 	})
-	fmt.Println("token extract: ", token)
+	if err != nil {
+		log.Println("error parsing jwt: ", err)
+		return false
+	}
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		fmt.Println("token claims: ", claims)
+		log.Println("claims: ", claims)
 		return true
-	} else {
-		fmt.Println(err)
 	}
 	return false
 }
